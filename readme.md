@@ -4,26 +4,20 @@ You must have installed node.js
 
 Clone the git package
 
-git clone run-stockfish
+git clone https://github.com/Nap095/inst-stf-node.git
 
-create a directory (for example) run-stockfish
+go to the directory inst-stf-node : cd inst-stf-node
 
-mkdir run-stockfish
+Initialize the package.json file with the command : npm init -y
 
-go to the directory
-
-create package.json file
-
-npm init -y
-
-install theses packages
+install theses packages :
 
 npm install express
 npm install stockfish
 npm install helmet
 npm install open
 
-add into the package.json, in the script section file this line :
+add into the package.json, in the [script] section file this line :
     "start": "node server.js"
 
-create the public directory
+execute npm start
