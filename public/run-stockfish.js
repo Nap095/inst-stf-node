@@ -27,7 +27,7 @@ startButton.addEventListener('click', () => {
             outputElement.innerHTML = `[${currentTime}] analysis started` + '<br>';
         }
 
-        /*
+        /* // For debugging very chatty output
         if (event.data.startsWith('info')) {
             outputElement.innerHTML += JSON.stringify(event.data) + '<br>';
         }
