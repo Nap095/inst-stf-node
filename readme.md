@@ -46,3 +46,5 @@ run-stockfish.js call Stockfish 16. Be careful, the name of the engine can chang
 Thanks to : 
 
 https://github.com/nmrugg/stockfish.js/tree/master
+
+The pieces images are in ```public/img/wikipedia```
