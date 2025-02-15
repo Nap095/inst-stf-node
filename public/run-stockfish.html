@@ -4,14 +4,18 @@
     <meta charset="UTF-8">
     <title>Stockfish Analysis</title>
     <link rel="stylesheet" href="run-stockfish.css">
+    <link rel="stylesheet" href="/chessboard/chessboard-1.0.0.min.css">
 </head>
 <body>
     <h1>Stockfish Analysis</h1>
     <label for="fen">FEN:</label>
     <input type="text" id="fen" value="r1bqkb1r/pp3ppp/2n1pn2/3p4/3N1B2/2P5/PP1NPPPP/R2QKB1R w KQkq - 0 7">
     <button id="start-analysis">Start Analysis</button>
+    <div id="myBoard" style="width: 400px"></div>
     <h2>Analysis Results:</h2>
     <div id="output"></div>
+    <script src="/jquery/jquery.min.js"></script>
+    <script src="/chessboard/chessboard-1.0.0.min.js"></script>
     <script src="run-stockfish.js"></script>
 </body>
 </html>

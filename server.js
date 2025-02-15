@@ -19,6 +19,12 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Serve the stockfish source files
 app.use('/stockfish', express.static(path.join(__dirname, 'node_modules/stockfish/src')));
 
+// Server jQuery source files
+app.use('/jquery', express.static(path.join(__dirname, 'node_modules/jquery/dist')));
+
+// Serve the chessboard source files
+app.use('/chessboard', express.static(path.join(__dirname, 'node_modules/@chrisoakman/chessboardjs/dist')));
+
 // Start the server and open the HTML page
 app.listen(port, async () => {
   console.log(`Server is running at http://localhost:${port}`);

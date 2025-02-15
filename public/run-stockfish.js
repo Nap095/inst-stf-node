@@ -1,4 +1,5 @@
 // script.js
+// This file contains the client-side JavaScript code that interacts with the Stockfish engine.
 const stockfish = new Worker('/stockfish/stockfish-nnue-16.js');
 
 const depth = 20;
@@ -8,11 +9,14 @@ const outputElement = document.getElementById('output');
 const fenInput = document.getElementById('fen');
 const startButton = document.getElementById('start-analysis');
 
+var board = Chessboard('myBoard')
+
 stockfish.postMessage('uci');
 stockfish.postMessage('setoption name MultiPV value ' + multiPV);
 
 startButton.addEventListener('click', () => {
     const fen = fenInput.value;
+    var board = Chessboard('myBoard', fen)
 
     stockfish.postMessage('uci');
     stockfish.postMessage('setoption name MultiPV value ' + multiPV);
