@@ -26,7 +26,7 @@ Install theses packages
 npm install express stockfish helmet open
 ```
 
-Add this line into the package.json file in the [scripts] section
+Check that you have into the package.json file in the [scripts] section, the line
 
 ```shell
 "start": "node server.js"
@@ -39,7 +39,7 @@ npm start
 ```
 ## Note
 
-run-stockfish.js call Stockfish 16. Be careful, one day the name of the engine can change. Check in `/nodes_modules/stockfish/src`
+run-stockfish.js call Stockfish 16. Be careful, the name of the engine can change. Check in `/nodes_modules/stockfish/src`
 
 ```const stockfish = new Worker('/stockfish/stockfish-nnue-16.js');```
 
