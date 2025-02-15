@@ -23,7 +23,7 @@ npm init -y
 Install theses packages
 
 ```shell
-npm install express stockfish helmet open
+npm install express stockfish helmet open @chrisoakman/chessboardjs jquery
 ```
 
 Check that you have into the package.json file in the [scripts] section, the line
