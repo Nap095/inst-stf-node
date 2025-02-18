@@ -1,21 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Stockfish Analysis</title>
     <link rel="stylesheet" href="run-stockfish.css">
     <link rel="stylesheet" href="/chessboard/chessboard-1.0.0.min.css">
 </head>
+
 <body>
     <h1>Stockfish Analysis</h1>
-    <label for="fen">FEN:</label>
-    <input type="text" id="fen" value="r1bqkb1r/pp3ppp/2n1pn2/3p4/3N1B2/2P5/PP1NPPPP/R2QKB1R w KQkq - 0 7">
-    <button id="start-analysis">Start Analysis</button>
-    <div id="myBoard" style="width: 400px"></div>
-    <h2>Analysis Results:</h2>
-    <div id="output"></div>
-    <script src="/jquery/jquery.min.js"></script>
-    <script src="/chessboard/chessboard-1.0.0.min.js"></script>
-    <script src="run-stockfish.js"></script>
+    <div class="position-editor">
+        <div id="myBoard"></div>
+        <div id="position-setup">
+            <label for="move-color">Move:</label>
+            <select id="move-color">
+                <option value="w">White to move</option>
+                <option value="b">Black to move</option>
+            </select>
+            <div>
+                <input type="checkbox" id="white-kingside" checked>
+                <label for="white-kingside">White kingside castling</label>
+            </div>
+            <div>
+                <input type="checkbox" id="white-queenside" checked>
+                <label for="white-queenside">White queenside castling</label>
+            </div>
+            <div>
+                <input type="checkbox" id="black-kingside" checked>
+                <label for="black-kingside">Black kingside castling</label>
+            </div>
+            <div>
+                <input type="checkbox" id="black-queenside" checked>
+                <label for="black-queenside">Black queenside castling</label>
+            </div>
+        </div>
+    </div>
+        <button id="startBtn">Start Position</button>
+        <button id="clearBtn">Clear Board</button>
+        <button id="checkBtn">Check Position</button>
+        <p></p>
+        <label for="fen">FEN:</label>
+        <input type="text" id="fen" value="r1bqkb1r/pp3ppp/2n1pn2/3p4/3N1B2/2P5/PP1NPPPP/R2QKB1R w KQkq - 0 7">
+        <button id="start-analysis">Start Analysis</button>
+        <h2>Analysis Results:</h2>
+        <div class="analysis-container">
+            <div id="chrono"></div>
+            <div id="variations"></div>
+        </div>
+        <div id="output"></div>
+        <script src="/jquery/jquery.min.js"></script>
+        <script src="/chessboard/chessboard-1.0.0.min.js"></script>
+        <script type="module" src="run-stockfish.js"></script>
 </body>
+
 </html>

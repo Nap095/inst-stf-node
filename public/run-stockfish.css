@@ -1,3 +1,31 @@
 #fen {
     width: 600px;
 }
+
+#myBoard {
+    width: 400px;
+}
+
+.analysis-container {
+    display: flex;
+    justify-content: space-between;
+}
+
+.position-editor {
+    display: flex;
+    justify-content: left;
+}
+
+
+#chrono {
+    width: 20%;
+    background-color: lightblue; /* Temporary background color for debugging */
+    border: 1px solid black; /* Temporary border for debugging */
+}
+
+#variations {
+    width: 75%;
+    background-color: lightgreen; /* Temporary background color for debugging */
+    border: 1px solid black; /* Temporary border for debugging */
+    margin-right: 10px;
+}

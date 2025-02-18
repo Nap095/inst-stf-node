@@ -1,5 +1,7 @@
 # How to use Stockfish (javascript) with node.js and express module
 
+This program analyze one position give from the a chessboard
+
 You must have installed node.js
 
 Clone the git package
@@ -23,10 +25,10 @@ npm init -y
 Install theses packages
 
 ```shell
-npm install express stockfish helmet open @chrisoakman/chessboardjs jquery
+npm install express stockfish helmet open @chrisoakman/chessboardjs jquery chess.js
 ```
 
-Check that you have into the package.json file in the [scripts] section, the line
+Add this line into the package.json file in the [scripts] section
 
 ```shell
 "start": "node server.js"
@@ -37,14 +39,16 @@ execute the program
 ```shell
 npm start
 ```
-## Note
+## Notes
 
-run-stockfish.js call Stockfish 16. Be careful, the name of the engine can change. Check in `/nodes_modules/stockfish/src`
+run-stockfish.js call Stockfish 16. Be careful, one day the name of the engine can change. Check in `/nodes_modules/stockfish/src`
 
 ```const stockfish = new Worker('/stockfish/stockfish-nnue-16.js');```
 
+You can test Stockfish in command line by the command `node .\node_modules\stockfish\src\stockfish-nnue-16.js`
+It display the line `Stockfish 16 64 POPCNT WASM Multithreaded SSE SIMD by the Stockfish developers (see AUTHORS file)`
+leave by `quit`
 Thanks to : 
 
 https://github.com/nmrugg/stockfish.js/tree/master
-
-The pieces images are in ```public/img/wikipedia```
+https://chessboardjs.com/

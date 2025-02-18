@@ -1,22 +1,103 @@
 // script.js
 // This file contains the client-side JavaScript code that interacts with the Stockfish engine.
+import { Chess, validateFen } from '/chess.js/dist/esm/chess.js'
+
 const stockfish = new Worker('/stockfish/stockfish-nnue-16.js');
 
-const depth = 20;
-const multiPV = 5;
+const chess = new Chess()
 
+const depth = 20;
+const multiPV = 10;
+
+const variationsElement = document.getElementById('variations');
 const outputElement = document.getElementById('output');
+const chronoElement = document.getElementById('chrono');
 const fenInput = document.getElementById('fen');
 const startButton = document.getElementById('start-analysis');
+var startTime = new Date();
 
-var board = Chessboard('myBoard')
+const fen = fenInput.value;
+
+var board = Chessboard('myBoard', {
+    draggable: true,
+    dropOffBoard: 'trash',
+    sparePieces: true,
+    position: fen,
+    onChange: function (oldPos, newPos) {
+        const newFen = Chessboard.objToFen(newPos);
+        const cp = CastlingPosition();
+        fenInput.value = newFen + ' ' + cp;
+        check_position()
+    }
+  })
+  
+$('#startBtn').on('click', board.start)
+$('#clearBtn').on('click', board.clear)
+$('#checkBtn').on('click', check_position)
+
+function check_position() {
+    const validation = validateFen(fenInput.value)
+    //console.log(fenInput.value)
+
+    if (validation.ok) {
+        outputElement.innerHTML = '<span style="color: green;">Position is valid</span>';
+    } else {
+        outputElement.innerHTML = '<span style="color: red;">Position is invalid: ' + validation.error + '</span>';
+        return
+    }
+
+    chess.load(fenInput.value)
+    let kw = chess.get('e1') || ''
+    let rkw = chess.get('h1') || ''
+    let rqw = chess.get('a1') || ''
+    let kb = chess.get('e8') || ''
+    let rkb = chess.get('h8') || ''
+    let rqb = chess.get('a8') || ''
+    console.log(kw, rkw, rqw, kb, rkb, rqb)
+
+    if (kw.type === 'k' && rkw.type === 'r') {
+        document.getElementById('white-kingside').checked = true
+    } else {    
+        document.getElementById('white-kingside').checked = false
+    }
+
+    if (kw.type === 'k' && rqw.type === 'r') {
+        document.getElementById('white-queenside').checked = true
+    } else {    
+        document.getElementById('white-queenside').checked = false
+    }
+
+    if (kb.type === 'k' && rkb.type === 'r') {
+        document.getElementById('black-kingside').checked = true
+    } else {    
+        document.getElementById('black-kingside').checked = false
+    }
+
+    if (kb.type === 'k' && rqb.type === 'r') {
+        document.getElementById('black-queenside').checked = true
+    } else {    
+        document.getElementById('black-queenside').checked = false
+    }
+}
+
+function CastlingPosition() {
+    let cp = ''
+    if (document.getElementById('white-kingside').checked) { cp += 'K' }
+    if (document.getElementById('white-queenside').checked) { cp += 'Q' }
+    if (document.getElementById('black-kingside').checked) { cp += 'k' }
+    if (document.getElementById('black-queenside').checked) { cp += 'q' }
+    if ( cp === '' ) { cp = '-' }
+    cp = document.getElementById('move-color').value + ' ' + cp + ' - 0 1'
+    return cp
+}
 
 stockfish.postMessage('uci');
 stockfish.postMessage('setoption name MultiPV value ' + multiPV);
 
 startButton.addEventListener('click', () => {
+    
     const fen = fenInput.value;
-    var board = Chessboard('myBoard', fen)
+    const listmultiPV = {}
 
     stockfish.postMessage('uci');
     stockfish.postMessage('setoption name MultiPV value ' + multiPV);
@@ -25,10 +106,12 @@ startButton.addEventListener('click', () => {
         const currentTime = new Date().toLocaleTimeString();
 
         if (event.data === 'uciok') {
-            stockfish.postMessage('position fen ' + fen);
+            stockfish.postMessage('position fen ' + ( fen ));
             stockfish.postMessage('go depth ' + depth);
             startTime = new Date(); // Record the start time
-            outputElement.innerHTML = `[${currentTime}] analysis started` + '<br>';
+            outputElement.innerHTML = ""
+            variationsElement.innerHTML = ""
+            chronoElement.innerHTML = `[${currentTime}] analysis started` + '<br>';
         }
 
         /* // For debugging very chatty output
@@ -38,7 +121,17 @@ startButton.addEventListener('click', () => {
         */
 
         if (event.data.includes('multipv')) {
-            outputElement.innerHTML += JSON.stringify(event.data) + '<br>';
+            //variationsElement.innerHTML += JSON.stringify(event.data) + '<br>';
+            const multipvMatch = event.data.match(/multipv (\d+)/);
+            listmultiPV[multipvMatch[1]] = multipvMatch['input']
+            variationsElement.innerHTML = listmultiPV
+
+            // Convert the hashtable to a string with each element separated by <br>
+            const variationsString = Object.entries(listmultiPV)
+            .map(([key, value]) => `${key}: ${value}`)
+            .join('<br>');
+                        
+            variationsElement.innerHTML = variationsString;        
         }
 
 
@@ -46,9 +139,10 @@ startButton.addEventListener('click', () => {
             const endTime = new Date(); // Record the end time
             const timeDiff = (endTime - startTime) / 1000; // Calculate the difference in seconds
 
-            outputElement.innerHTML += 'Best move: ' + event.data + '<br>';
-            outputElement.innerHTML += `[${currentTime}] analysis complete` + '<br>';
-            outputElement.innerHTML += `Analysis took ${timeDiff} seconds` + '<br>';
+
+            chronoElement.innerHTML += `[${currentTime}] analysis complete` + '<br>';
+            chronoElement.innerHTML += `Analysis took ${timeDiff} seconds` + '<br>';
+            chronoElement.innerHTML += 'Best move: ' + event.data + '<br>';
         }
     };
 })

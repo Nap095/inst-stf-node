@@ -25,6 +25,9 @@ app.use('/jquery', express.static(path.join(__dirname, 'node_modules/jquery/dist
 // Serve the chessboard source files
 app.use('/chessboard', express.static(path.join(__dirname, 'node_modules/@chrisoakman/chessboardjs/dist')));
 
+// Serve the chessboard source files
+app.use('/chess.js', express.static(path.join(__dirname, 'node_modules/chess.js')));
+
 // Start the server and open the HTML page
 app.listen(port, async () => {
   console.log(`Server is running at http://localhost:${port}`);
