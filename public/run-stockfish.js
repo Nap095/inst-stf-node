@@ -55,25 +55,25 @@ function check_position() {
     let rqb = chess.get('a8') || ''
     console.log(kw, rkw, rqw, kb, rkb, rqb)
 
-    if (kw.type === 'k' && rkw.type === 'r') {
+    if ((kw.type === 'k' && kw.color === 'w') && (rkw.type === 'r' && rkw.color === 'w')) {
         document.getElementById('white-kingside').checked = true
     } else {    
         document.getElementById('white-kingside').checked = false
     }
 
-    if (kw.type === 'k' && rqw.type === 'r') {
+    if ((kw.type === 'k' && kw.color === 'w') && (rqw.type === 'r' && rqw.color === 'w')) {
         document.getElementById('white-queenside').checked = true
     } else {    
         document.getElementById('white-queenside').checked = false
     }
 
-    if (kb.type === 'k' && rkb.type === 'r') {
+    if ((kb.type === 'k' && kb.color === 'b') && (rkb.type === 'r' && rkb.color === 'b')) {
         document.getElementById('black-kingside').checked = true
     } else {    
         document.getElementById('black-kingside').checked = false
     }
 
-    if (kb.type === 'k' && rqb.type === 'r') {
+    if ((kb.type === 'k' && kb.color === 'b') && (rqb.type === 'r' && rqb.color === 'b')) {
         document.getElementById('black-queenside').checked = true
     } else {    
         document.getElementById('black-queenside').checked = false
