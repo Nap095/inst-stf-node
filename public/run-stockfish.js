@@ -39,6 +39,7 @@ function check_position() {
     const validation = validateFen(fenInput.value)
     //console.log(fenInput.value)
 
+    // Check if the position is valid
     if (validation.ok) {
         outputElement.innerHTML = '<span style="color: green;">Position is valid</span>';
     } else {
@@ -46,6 +47,7 @@ function check_position() {
         return
     }
 
+    // Check if castling is potentially possible
     chess.load(fenInput.value)
     let kw = chess.get('e1') || ''
     let rkw = chess.get('h1') || ''

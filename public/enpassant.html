@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/chessboard/chessboard-1.0.0.min.css">
+    <title>Document</title>
+</head>
+<body>
+    <h1>En passant  - study</h1>
+    <div id="myBoard" style="width: 400px; margin-bottom: 10px;"></div>
+     <div style="margin-bottom: 10px;">
+        <label for="position">Choose a position:</label>
+        <select id="positions">
+            <option value="8/8/4k3/1Pp5/8/8/8/4K3 w - - 0 1">8/8/4k3/1Pp5/8/8/8/4K3 w - - 0 1</option>
+            <option value="4k3/8/4b3/1PpPpPp1/8/8/8/4K3 w - - 0 1">4k3/8/4b3/1PpPpPp1/8/8/8/4K3 w - - 0 1</option>
+            <option value="4k3/8/8/8/pPPpPpPp/2R5/6N1/4K3 b - - 0 1" selected>4k3/8/8/8/pPPpPpPp/2R5/6N1/4K3 b - - 0 1</option>
+            <option value="4k3/8/8/8/pPPpPpPp/8/8/4K3 b - - 0 1">4k3/8/8/8/pPPpPpPp/8/8/4K3 b - - 0 1</option>
+        </select>
+    </div>
+
+    <div id="output"></div>
+    <script src="/jquery/jquery.min.js"></script>
+    <script src="/chessboard/chessboard-1.0.0.min.js"></script>
+    <script src="enpassant.js"></script>
+</body>
+</html>
