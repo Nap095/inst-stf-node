@@ -52,3 +52,4 @@ Thanks to :
 
 https://github.com/nmrugg/stockfish.js/tree/master
 https://chessboardjs.com/
+
