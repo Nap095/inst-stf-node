@@ -1,6 +1,7 @@
 // script.js
 // This file contains the client-side JavaScript code that interacts with the Stockfish engine.
 import { Chess, validateFen } from '/chess.js/dist/esm/chess.js'
+import { findEnPassantSquares } from './enpassant.js';
 
 const stockfish = new Worker('/stockfish/stockfish-nnue-16.js');
 
@@ -36,7 +37,8 @@ $('#clearBtn').on('click', board.clear)
 $('#checkBtn').on('click', check_position)
 
 function check_position() {
-    const validation = validateFen(fenInput.value)
+    let fenposition = fenInput.value
+    const validation = validateFen(fenposition)
     //console.log(fenInput.value)
 
     // Check if the position is valid
@@ -47,8 +49,13 @@ function check_position() {
         return
     }
 
+    // Check if en passant is potentially possible
+    let parts = fenposition.split(' ')
+    let listEnPassant = findEnPassantSquares(parts[0], parts[1])
+    console.log(listEnPassant)
+
     // Check if castling is potentially possible
-    chess.load(fenInput.value)
+    chess.load(fenposition)
     let kw = chess.get('e1') || ''
     let rkw = chess.get('h1') || ''
     let rqw = chess.get('a1') || ''
@@ -116,7 +123,7 @@ startButton.addEventListener('click', () => {
             chronoElement.innerHTML = `[${currentTime}] analysis started` + '<br>';
         }
 
-        /* // For debugging very chatty output
+        /* // For debugging, very chatty output
         if (event.data.startsWith('info')) {
             outputElement.innerHTML += JSON.stringify(event.data) + '<br>';
         }
