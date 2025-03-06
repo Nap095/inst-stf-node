@@ -51,5 +51,8 @@ leave by `quit`
 Thanks to : 
 
 https://github.com/nmrugg/stockfish.js/tree/master
+
 https://chessboardjs.com/
+
+https://github.com/jhlywa/chess.js/blob/master/README.md
 

@@ -25,7 +25,7 @@ export function findEnPassantSquares(fen, color) {
     }
 
     // check if there is a white pawn in row
-    console.log('****************************************************************');
+    //console.log('****************************************************************');
     for (let col = 0; col < 8; col++) {
         const EPSquare = epboard[row][col];
 
@@ -43,7 +43,7 @@ export function findEnPassantSquares(fen, color) {
                     //console.log(EPSquare.square, 'left-row - 1: ', epboard[row - 1][left]);
                     //console.log(EPSquare.square, 'left-row - 2: ', epboard[row - 2][left]);
                     if (epboard[delta1][left] === null && epboard[delta2][left] === null) {
-                        console.log(col, EPSquare.square, 'LEFT', row, left);
+                        //console.log(col, EPSquare.square, 'LEFT', row, left);
                         enPassantSquares.push(EPSquare.square);
                     }
                 }
@@ -56,7 +56,7 @@ export function findEnPassantSquares(fen, color) {
                     //console.log(EPSquare.square, 'right-row - 1: ', epboard[row - 1][right]);
                     //console.log(EPSquare.square, 'right-row - 2: ', epboard[row - 2][right]);
                     if (epboard[delta1][right] === null && epboard[delta2][right] === null) {
-                        console.log(col, EPSquare.square, 'RIGHT', row, right);
+                        //console.log(col, EPSquare.square, 'RIGHT', row, right);
                         enPassantSquares.push(EPSquare.square);
                     }
                 }
