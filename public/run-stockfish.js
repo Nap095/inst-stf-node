@@ -22,52 +22,49 @@ var startTime = new Date();
 
 const fen = fenInput.value;
 
-var board = Chessboard('myBoard', {
+var analyzeBoard = Chessboard('myBoard', {
     draggable: true,
     dropOffBoard: 'trash',
     sparePieces: true,
     position: fen,
     onChange: function (oldPos, newPos) {
-        console.log('Position changed')
+        console.log('==========>Position changed')
         const newFen = Chessboard.objToFen(newPos);
-        console.log(newPos, newFen)
-        //setCheckboxCastling(newPos);
-        const cp = CastlingPosition();
-        fenInput.value = newFen + ' ' + cp;
-        check_position(newPos)
+        console.log('newPos=', newPos, 'newFen=', newFen)
+        //const cp = CastlingPosition();
+        fenInput.value = newFen + ' ' + document.getElementById('move-color').value + ' ' + CastlingPosition() + ' ' + '-' + ' 0 1';
+        check_position(newFen)
         outputElement.innerHTML = "Chessboard = " + newFen
     }
 })
 
-$('#startBtn').on('click', board.start)
-$('#clearBtn').on('click', board.clear)
-$('#checkBtn').on('click', check_position(board.fen()))
+$('#startBtn').on('click', analyzeBoard.start)
+$('#clearBtn').on('click', analyzeBoard.clear)
+$('#checkBtn').on('click', check_position(analyzeBoard.fen()))
 
 startButton.addEventListener('click', analyzePosition);
 document.getElementById('move-color').addEventListener('change', changeFenColor);
-document.getElementById('white-kingside').addEventListener('change', check_position);
-document.getElementById('white-queenside').addEventListener('change', check_position);
-document.getElementById('black-kingside').addEventListener('change', check_position);
-document.getElementById('black-queenside').addEventListener('change', check_position);
+document.getElementById('white-kingside').addEventListener('change', check_position(analyzeBoard.fen()));
+document.getElementById('white-queenside').addEventListener('change', check_position(analyzeBoard.fen()));
+document.getElementById('black-kingside').addEventListener('change', check_position(analyzeBoard.fen()));
+document.getElementById('black-queenside').addEventListener('change', check_position(analyzeBoard.fen()));
 
 function check_position(board_position) {
-    let z = board_position
-    let fenposition = fenInput.value
-    const validation = validateFen(fenposition)
-    //console.log(fenInput.value)
+    console.log('check_position', board_position)
+    let fenposition = board_position + ' ' + document.getElementById('move-color').value + ' ' + CastlingPosition() + ' '  + '-' + ' 0 1'
+    const validation = validateFen(fenposition) // From chess.js module
 
     // Check if the position is valid
     if (validation.ok) {
         warningElement.innerHTML = '<span style="color: green;">Position is valid</span>';
     } else {
         warningElement.innerHTML = '<span style="color: red;">Position is invalid: ' + validation.error + '</span>';
-        return false
+        return
     }
 
     // Check if en passant is potentially possible
     let parts = fenposition.split(' ')
     let listEnPassant = findEnPassantSquares(parts[0], parts[1])
-    //console.log(listEnPassant)
     enPassantSelect.innerHTML = '<option value="">None</option>'; // Clear existing options
     listEnPassant.forEach(square => {
         const option = document.createElement('option');
@@ -76,15 +73,15 @@ function check_position(board_position) {
         enPassantSelect.appendChild(option);
     });
 
-    return true
+    return
 }
 
 function setCheckboxCastling(board_position) {
     // Check if castling is potentially possible
-    console.log(board_position)
+    console.log('setCheckboxCastling')
 
     try {
-        chess.load(board.fen() + ' ' + document.getElementById('move-color').value + ' ' + '-' + ' - 0 1')
+        chess.load(analyzeBoard.fen() + ' ' + document.getElementById('move-color').value + ' ' + '-' + ' - 0 1')
         let kw = chess.get('e1') || ''
         let rkw = chess.get('h1') || ''
         let rqw = chess.get('a1') || ''
@@ -122,29 +119,32 @@ function setCheckboxCastling(board_position) {
 }
 
 function CastlingPosition() {
+    console.log('CastlingPosition')
     let cp = ''
     if (document.getElementById('white-kingside').checked) { cp += 'K' }
     if (document.getElementById('white-queenside').checked) { cp += 'Q' }
     if (document.getElementById('black-kingside').checked) { cp += 'k' }
     if (document.getElementById('black-queenside').checked) { cp += 'q' }
     if (cp === '') { cp = '-' }
-    cp = document.getElementById('move-color').value + ' ' + cp + ' - 0 1'
+    //cp = document.getElementById('move-color').value + ' ' + cp + ' - 0 1'
     return cp
 }
 
 function EnPassantPosition() {
+    console.log('EnPassantPosition')
     let ep = ''
     if (enPassantSelect.value) { ep = enPassantSelect.value }
     return ep
 }
 
 function changeFenColor() {
+    console.log('changeFenColor')
     let fenposition = fenInput.value
     let parts = fenposition.split(' ')
     let color = document.getElementById('move-color').value
     parts[1] = color
     fenInput.value = parts.join(' ')
-    check_position()
+    check_position(analyzeBoard.fen())
 }
 
 stockfish.postMessage('uci');
@@ -154,6 +154,11 @@ stockfish.postMessage('setoption name MultiPV value ' + multiPV);
 // Analyze the position using Stockfish
 //=========================================================
 function analyzePosition() {
+
+    if (!validateFen(fenInput.value).ok) {
+        variationsElement.innerHTML = '<span style="color: red;">Position is invalid</span>';
+        return;
+    }
 
     const fen = fenInput.value;
     const listmultiPV = {}
