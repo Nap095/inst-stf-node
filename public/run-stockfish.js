@@ -15,7 +15,6 @@ const warningElement = document.getElementById('warning');
 const outputElement = document.getElementById('output');
 const chronoElement = document.getElementById('chrono');
 const fenInput = document.getElementById('fen');
-const startButton = document.getElementById('start-analysis');
 const enPassantSelect = document.getElementById('enpassant');
 
 var startTime = new Date();
@@ -31,23 +30,62 @@ var analyzeBoard = Chessboard('myBoard', {
         console.log('==========>Position changed')
         const newFen = Chessboard.objToFen(newPos);
         console.log('newPos=', newPos, 'newFen=', newFen)
-        //const cp = CastlingPosition();
-        fenInput.value = newFen + ' ' + document.getElementById('move-color').value + ' ' + CastlingPosition() + ' ' + '-' + ' 0 1';
-        check_position(newFen)
-        outputElement.innerHTML = "Chessboard = " + newFen
+        //fenInput.value = newFen + ' ' + document.getElementById('move-color').value + ' ' + CastlingPosition() + ' ' + '-' + ' 0 1';
+        let r = check_position(newFen)
+        if ( r === true) {
+            setCheckboxCastling(newPos)
+            fenInput.value = newFen + ' ' + document.getElementById('move-color').value + ' ' + CastlingPosition() + ' ' + '-' + ' 0 1';
+        }
     }
 })
 
-$('#startBtn').on('click', analyzeBoard.start)
-$('#clearBtn').on('click', analyzeBoard.clear)
-$('#checkBtn').on('click', check_position(analyzeBoard.fen()))
+$('#startBtn').on('click', btn_start_position)
+$('#clearBtn').on('click', btn_clear_board)
+$('#checkBtn').on('click', btn_check_position)
+$('#pushBBtn').on('click', btn_push_to_board)
 
-startButton.addEventListener('click', analyzePosition);
+document.getElementById('start-analysis').addEventListener('click', analyzePosition);
 document.getElementById('move-color').addEventListener('change', changeFenColor);
-document.getElementById('white-kingside').addEventListener('change', check_position(analyzeBoard.fen()));
-document.getElementById('white-queenside').addEventListener('change', check_position(analyzeBoard.fen()));
-document.getElementById('black-kingside').addEventListener('change', check_position(analyzeBoard.fen()));
-document.getElementById('black-queenside').addEventListener('change', check_position(analyzeBoard.fen()));
+document.getElementById('white-kingside').addEventListener('change', btn_check_position);
+document.getElementById('white-queenside').addEventListener('change', btn_check_position);
+document.getElementById('black-kingside').addEventListener('change', btn_check_position);
+document.getElementById('black-queenside').addEventListener('change', btn_check_position);
+
+
+function btn_push_to_board() {
+    console.log('push_to_board')
+    let fenposition = fenInput.value
+    const validation = validateFen(fenposition) // From chess.js module
+       // Check if the position is valid
+       if (validation.ok) {
+        warningElement.innerHTML = '<span style="color: green;">Position is valid</span>';
+    } else {
+        warningElement.innerHTML = '<span style="color: red;">Position is invalid: ' + validation.error + '</span>';
+        return false
+    }
+    analyzeBoard.position(fenposition)
+    chess.load(fenposition)
+}
+
+function btn_check_position() {
+    let r = check_position(analyzeBoard.fen())
+}
+
+function btn_start_position() {
+    console.log('start_position')
+    analyzeBoard.start()
+     document.getElementById('move-color').value = 'w'
+    setCheckboxCastling(analyzeBoard.position())
+    fenInput.value = analyzeBoard.fen() + ' ' + document.getElementById('move-color').value + ' ' + CastlingPosition() + ' '  + '-' + ' 0 1'
+}
+
+function btn_clear_board() {
+    console.log('clear_board')
+    analyzeBoard.clear()
+     document.getElementById('move-color').value = 'w'
+    setCheckboxCastling(analyzeBoard.position())
+    fenInput.value = analyzeBoard.fen() + ' ' + document.getElementById('move-color').value + ' ' + CastlingPosition() + ' '  + '-' + ' 0 1'
+}
 
 function check_position(board_position) {
     console.log('check_position', board_position)
@@ -59,7 +97,7 @@ function check_position(board_position) {
         warningElement.innerHTML = '<span style="color: green;">Position is valid</span>';
     } else {
         warningElement.innerHTML = '<span style="color: red;">Position is invalid: ' + validation.error + '</span>';
-        return
+        return false
     }
 
     // Check if en passant is potentially possible
@@ -73,48 +111,38 @@ function check_position(board_position) {
         enPassantSelect.appendChild(option);
     });
 
-    return
+    return true
 }
 
 function setCheckboxCastling(board_position) {
     // Check if castling is potentially possible
-    console.log('setCheckboxCastling')
-
-    try {
-        chess.load(analyzeBoard.fen() + ' ' + document.getElementById('move-color').value + ' ' + '-' + ' - 0 1')
-        let kw = chess.get('e1') || ''
-        let rkw = chess.get('h1') || ''
-        let rqw = chess.get('a1') || ''
-        let kb = chess.get('e8') || ''
-        let rkb = chess.get('h8') || ''
-        let rqb = chess.get('a8') || ''
-        //console.log(kw, rkw, rqw, kb, rkb, rqb)
-
-        if ((kw.type === 'k' && kw.color === 'w') && (rkw.type === 'r' && rkw.color === 'w')) {
+     try {
+ 
+        if ((board_position['e1'] === 'wK') && (board_position['h1'] === 'wR')) {
             document.getElementById('white-kingside').checked = true
         } else {
             document.getElementById('white-kingside').checked = false
         }
 
-        if ((kw.type === 'k' && kw.color === 'w') && (rqw.type === 'r' && rqw.color === 'w')) {
+        if ((board_position['e1'] === 'wK') && (board_position['a1'] === 'wR')) {
             document.getElementById('white-queenside').checked = true
         } else {
             document.getElementById('white-queenside').checked = false
         }
 
-        if ((kb.type === 'k' && kb.color === 'b') && (rkb.type === 'r' && rkb.color === 'b')) {
+        if ((board_position['e8'] === 'bK') && (board_position['h8'] === 'bR')) {
             document.getElementById('black-kingside').checked = true
         } else {
             document.getElementById('black-kingside').checked = false
         }
 
-        if ((kb.type === 'k' && kb.color === 'b') && (rqb.type === 'r' && rqb.color === 'b')) {
+        if ((board_position['e8'] === 'bK') && (board_position['a8'] === 'bR')) {
             document.getElementById('black-queenside').checked = true
         } else {
             document.getElementById('black-queenside').checked = false
         }
     } catch (error) {
-        //console.log(error)
+        console.log('La position est invalide', error)
     }
 }
 
@@ -144,7 +172,7 @@ function changeFenColor() {
     let color = document.getElementById('move-color').value
     parts[1] = color
     fenInput.value = parts.join(' ')
-    check_position(analyzeBoard.fen())
+    let r = check_position(analyzeBoard.fen())
 }
 
 stockfish.postMessage('uci');
