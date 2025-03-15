@@ -25,8 +25,11 @@ app.use('/jquery', express.static(path.join(__dirname, 'node_modules/jquery/dist
 // Serve the chessboard source files
 app.use('/chessboard', express.static(path.join(__dirname, 'node_modules/@chrisoakman/chessboardjs/dist')));
 
-// Serve the chessboard source files
+// Serve the chess source files
 app.use('/chess.js', express.static(path.join(__dirname, 'node_modules/chess.js')));
+
+// Server the Chart.js source files
+app.use('/chart.js', express.static(path.join(__dirname, 'node_modules/chart.js')));
 
 // Start the server and open the HTML page
 app.listen(port, async () => {

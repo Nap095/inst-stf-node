@@ -7,8 +7,8 @@ const stockfish = new Worker('/stockfish/stockfish-nnue-16.js');
 
 const chess = new Chess()
 
-const depth = 20;
-const multiPV = 10;
+//const depth = 20;
+//const multiPV = 10;
 
 const variationsElement = document.getElementById('variations');
 const warningElement = document.getElementById('warning');
@@ -16,6 +16,9 @@ const outputElement = document.getElementById('output');
 const chronoElement = document.getElementById('chrono');
 const fenInput = document.getElementById('fen');
 const enPassantSelect = document.getElementById('enpassant');
+const variationsval = document.getElementById('variations-val');
+const depthval = document.getElementById('depth-val');
+
 
 var startTime = new Date();
 
@@ -176,7 +179,7 @@ function changeFenColor() {
 }
 
 stockfish.postMessage('uci');
-stockfish.postMessage('setoption name MultiPV value ' + multiPV);
+//stockfish.postMessage('setoption name MultiPV value ' + multiPV);
 
 //=========================================================
 // Analyze the position using Stockfish
@@ -189,17 +192,20 @@ function analyzePosition() {
     }
 
     const fen = fenInput.value;
+    let depth = depthval.value
+    let multiPV = variationsval.value
     const listmultiPV = {}
 
     stockfish.postMessage('uci');
     stockfish.postMessage('setoption name MultiPV value ' + multiPV);
+    //stockfish.postMessage('setoption name movetime value' + 1000);
 
     stockfish.onmessage = function (event) {
         const currentTime = new Date().toLocaleTimeString();
 
         if (event.data === 'uciok') {
             stockfish.postMessage('position fen ' + (fen));
-            stockfish.postMessage('go depth ' + depth);
+            stockfish.postMessage('go depth ' + depth + ' movetime 5000');
             startTime = new Date(); // Record the start time
             outputElement.innerHTML = ""
             variationsElement.innerHTML = ""
