@@ -37,7 +37,7 @@
             <div>
                 <label for="enpassant">En Passant</label>
                 <select name="enpassant" id="enpassant">
-                    <option value="">None</option>
+                    <option value="">-</option>
                 </select>
             </div>
         </div>
@@ -55,9 +55,10 @@
             <input type="text" id="depth-val" value="20">
             <label>Variations:</label>
             <input type="text" id="variations-val" value="10">
+            <label>Max time (ms):</label>
+            <input type="text" id="maxtime-val" value="10000">
             <button id="start-analysis">Start Analysis</button>
         </div>
-
     </div>
     <h2>Analysis Results:</h2>
     <div class="analysis-container">

@@ -7,9 +7,6 @@ const stockfish = new Worker('/stockfish/stockfish-nnue-16.js');
 
 const chess = new Chess()
 
-//const depth = 20;
-//const multiPV = 10;
-
 const variationsElement = document.getElementById('variations');
 const warningElement = document.getElementById('warning');
 const outputElement = document.getElementById('output');
@@ -18,6 +15,7 @@ const fenInput = document.getElementById('fen');
 const enPassantSelect = document.getElementById('enpassant');
 const variationsval = document.getElementById('variations-val');
 const depthval = document.getElementById('depth-val');
+const maxtimeval = document.getElementById('maxtime-val');
 
 
 var startTime = new Date();
@@ -33,11 +31,10 @@ var analyzeBoard = Chessboard('myBoard', {
         console.log('==========>Position changed')
         const newFen = Chessboard.objToFen(newPos);
         console.log('newPos=', newPos, 'newFen=', newFen)
-        //fenInput.value = newFen + ' ' + document.getElementById('move-color').value + ' ' + CastlingPosition() + ' ' + '-' + ' 0 1';
         let r = check_position(newFen)
         if ( r === true) {
             setCheckboxCastling(newPos)
-            fenInput.value = newFen + ' ' + document.getElementById('move-color').value + ' ' + CastlingPosition() + ' ' + '-' + ' 0 1';
+            fenInput.value = newFen + ' ' + document.getElementById('move-color').value + ' ' + CastlingPosition() + ' ' + EnPassantPosition() + ' 0 1';
         }
     }
 })
@@ -53,6 +50,14 @@ document.getElementById('white-kingside').addEventListener('change', btn_check_p
 document.getElementById('white-queenside').addEventListener('change', btn_check_position);
 document.getElementById('black-kingside').addEventListener('change', btn_check_position);
 document.getElementById('black-queenside').addEventListener('change', btn_check_position);
+document.getElementById('enpassant').addEventListener('change', lst_enpassant);
+
+function lst_enpassant() {
+    console.log('lst_enpassant')
+    let parts = fenInput.value.split(' ')
+    parts[3] = EnPassantPosition()
+    fenInput.value = parts.join(' ')
+}
 
 
 function btn_push_to_board() {
@@ -78,6 +83,7 @@ function btn_start_position() {
     console.log('start_position')
     analyzeBoard.start()
      document.getElementById('move-color').value = 'w'
+     enPassantSelect.value = '-' // Clear en passant
     setCheckboxCastling(analyzeBoard.position())
     fenInput.value = analyzeBoard.fen() + ' ' + document.getElementById('move-color').value + ' ' + CastlingPosition() + ' '  + '-' + ' 0 1'
 }
@@ -86,6 +92,7 @@ function btn_clear_board() {
     console.log('clear_board')
     analyzeBoard.clear()
      document.getElementById('move-color').value = 'w'
+     enPassantSelect.value = '-' // Clear en passant
     setCheckboxCastling(analyzeBoard.position())
     fenInput.value = analyzeBoard.fen() + ' ' + document.getElementById('move-color').value + ' ' + CastlingPosition() + ' '  + '-' + ' 0 1'
 }
@@ -106,13 +113,16 @@ function check_position(board_position) {
     // Check if en passant is potentially possible
     let parts = fenposition.split(' ')
     let listEnPassant = findEnPassantSquares(parts[0], parts[1])
-    enPassantSelect.innerHTML = '<option value="">None</option>'; // Clear existing options
+    console.log('listEnPassant=', listEnPassant)
+    enPassantSelect.innerHTML = '<option value="">-</option>'; // Clear existing options
     listEnPassant.forEach(square => {
         const option = document.createElement('option');
         option.value = square;
         option.textContent = square;
         enPassantSelect.appendChild(option);
     });
+    enPassantSelect.value = "-"
+    console.log('enPassantSelect=', enPassantSelect)
 
     return true
 }
@@ -120,7 +130,6 @@ function check_position(board_position) {
 function setCheckboxCastling(board_position) {
     // Check if castling is potentially possible
      try {
- 
         if ((board_position['e1'] === 'wK') && (board_position['h1'] === 'wR')) {
             document.getElementById('white-kingside').checked = true
         } else {
@@ -157,14 +166,18 @@ function CastlingPosition() {
     if (document.getElementById('black-kingside').checked) { cp += 'k' }
     if (document.getElementById('black-queenside').checked) { cp += 'q' }
     if (cp === '') { cp = '-' }
-    //cp = document.getElementById('move-color').value + ' ' + cp + ' - 0 1'
     return cp
 }
 
 function EnPassantPosition() {
-    console.log('EnPassantPosition')
+    console.log('EnPassantPosition', typeof enPassantSelect.value)
     let ep = ''
-    if (enPassantSelect.value) { ep = enPassantSelect.value }
+    if (enPassantSelect.value === '-' || !enPassantSelect.value)
+        { ep = '-' }
+    else {
+        ep = enPassantSelect.value
+    }
+    console.log('ep=', ep, typeof ep)
     return ep
 }
 
@@ -194,6 +207,7 @@ function analyzePosition() {
     const fen = fenInput.value;
     let depth = depthval.value
     let multiPV = variationsval.value
+    let maxtime = maxtimeval.value
     const listmultiPV = {}
 
     stockfish.postMessage('uci');
@@ -205,7 +219,7 @@ function analyzePosition() {
 
         if (event.data === 'uciok') {
             stockfish.postMessage('position fen ' + (fen));
-            stockfish.postMessage('go depth ' + depth + ' movetime 5000');
+            stockfish.postMessage('go depth ' + depth + ' movetime ' + maxtime);
             startTime = new Date(); // Record the start time
             outputElement.innerHTML = ""
             variationsElement.innerHTML = ""
