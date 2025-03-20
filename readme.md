@@ -61,3 +61,6 @@ https://github.com/jhlywa/chess.js/blob/master/README.md
 `k7/8/6p1/5pP1/8/8/8/5K2 w - f6 0 1` (en passant white)
 
 `8/8/8/8/1pP5/1P6/8/3k1K2 b - c3 0 1` (en passant black)
+
+`4k3/8/p7/PpPpPpPp/8/8/8/4K3 w - b6` 0 1 (en passant white)
+

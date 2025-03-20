@@ -43,6 +43,7 @@ $('#startBtn').on('click', btn_start_position)
 $('#clearBtn').on('click', btn_clear_board)
 $('#checkBtn').on('click', btn_check_position)
 $('#pushBBtn').on('click', btn_push_to_board)
+$('#flipBBtn').on('click', btn_flip_board)
 
 document.getElementById('start-analysis').addEventListener('click', analyzePosition);
 document.getElementById('move-color').addEventListener('change', changeFenColor);
@@ -51,6 +52,11 @@ document.getElementById('white-queenside').addEventListener('change', btn_check_
 document.getElementById('black-kingside').addEventListener('change', btn_check_position);
 document.getElementById('black-queenside').addEventListener('change', btn_check_position);
 document.getElementById('enpassant').addEventListener('change', lst_enpassant);
+
+function btn_flip_board() {
+    console.log('flip_board')
+    analyzeBoard.flip()
+}
 
 function lst_enpassant() {
     console.log('lst_enpassant')
