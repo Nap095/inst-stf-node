@@ -4,6 +4,7 @@ import { Chess, validateFen } from '/chess.js/dist/esm/chess.js'
 import { findEnPassantSquares } from './enpassant.js';
 
 const stockfish = new Worker('/stockfish/stockfish-nnue-16.js');
+stockfish.postMessage('uci');
 
 const chess = new Chess()
 
@@ -47,25 +48,32 @@ $('#flipBBtn').on('click', btn_flip_board)
 
 document.getElementById('start-analysis').addEventListener('click', analyzePosition);
 document.getElementById('move-color').addEventListener('change', changeFenColor);
-document.getElementById('white-kingside').addEventListener('change', btn_check_position);
-document.getElementById('white-queenside').addEventListener('change', btn_check_position);
-document.getElementById('black-kingside').addEventListener('change', btn_check_position);
-document.getElementById('black-queenside').addEventListener('change', btn_check_position);
+document.getElementById('white-kingside').addEventListener('change', cbo_castling_change);
+document.getElementById('white-queenside').addEventListener('change', cbo_castling_change);
+document.getElementById('black-kingside').addEventListener('change', cbo_castling_change);
+document.getElementById('black-queenside').addEventListener('change', cbo_castling_change);
 document.getElementById('enpassant').addEventListener('change', lst_enpassant);
 
+//=========================================================
+// If checkbox is checked, set the castling position
+//=========================================================
+function cbo_castling_change() {
+    console.log('checkbox_castling')
+    let parts = fenInput.value.split(' ')
+    parts[2] = CastlingPosition()
+    fenInput.value = parts.join(' ') 
+}
+//=========================================================
+// Button Flip the board (w<->b)
+//=========================================================
 function btn_flip_board() {
     console.log('flip_board')
     analyzeBoard.flip()
 }
 
-function lst_enpassant() {
-    console.log('lst_enpassant')
-    let parts = fenInput.value.split(' ')
-    parts[3] = EnPassantPosition()
-    fenInput.value = parts.join(' ')
-}
-
-
+//=========================================================
+// Button Send the fen position to the board
+//=========================================================
 function btn_push_to_board() {
     console.log('push_to_board')
     let fenposition = fenInput.value
@@ -81,28 +89,40 @@ function btn_push_to_board() {
     chess.load(fenposition)
 }
 
-function btn_check_position() {
-    let r = check_position(analyzeBoard.fen())
-}
-
+//=========================================================
+// Button to start position
+//=========================================================
 function btn_start_position() {
     console.log('start_position')
     analyzeBoard.start()
      document.getElementById('move-color').value = 'w'
      enPassantSelect.value = '-' // Clear en passant
     setCheckboxCastling(analyzeBoard.position())
-    fenInput.value = analyzeBoard.fen() + ' ' + document.getElementById('move-color').value + ' ' + CastlingPosition() + ' '  + '-' + ' 0 1'
+    fenInput.value = analyzeBoard.fen() + ' ' + document.getElementById('move-color').value + ' ' + CastlingPosition() + ' '  + EnPassantPosition() + ' 0 1'
 }
 
+//=========================================================
+// Button to clear the board
+//=========================================================
 function btn_clear_board() {
     console.log('clear_board')
     analyzeBoard.clear()
      document.getElementById('move-color').value = 'w'
      enPassantSelect.value = '-' // Clear en passant
     setCheckboxCastling(analyzeBoard.position())
-    fenInput.value = analyzeBoard.fen() + ' ' + document.getElementById('move-color').value + ' ' + CastlingPosition() + ' '  + '-' + ' 0 1'
+    fenInput.value = analyzeBoard.fen() + ' ' + document.getElementById('move-color').value + ' ' + CastlingPosition() + ' '  + EnPassantPosition() + ' 0 1'
 }
 
+//=========================================================
+// Button to check the position
+//=========================================================
+function btn_check_position() {
+    let r = check_position(analyzeBoard.fen())
+}
+
+//=========================================================
+// Check the position
+//=========================================================
 function check_position(board_position) {
     console.log('check_position', board_position)
     let fenposition = board_position + ' ' + document.getElementById('move-color').value + ' ' + CastlingPosition() + ' '  + '-' + ' 0 1'
@@ -110,6 +130,8 @@ function check_position(board_position) {
 
     // Check if the position is valid
     if (validation.ok) {
+        chess.load(fenposition)
+        console.log('moves:', chess.moves(fenInput.value))
         warningElement.innerHTML = '<span style="color: green;">Position is valid</span>';
     } else {
         warningElement.innerHTML = '<span style="color: red;">Position is invalid: ' + validation.error + '</span>';
@@ -133,6 +155,9 @@ function check_position(board_position) {
     return true
 }
 
+//=========================================================
+// Set the castling checkboxes if possible
+//=========================================================
 function setCheckboxCastling(board_position) {
     // Check if castling is potentially possible
      try {
@@ -164,6 +189,9 @@ function setCheckboxCastling(board_position) {
     }
 }
 
+//=========================================================
+// Set Castling position string for the FEN
+//=========================================================
 function CastlingPosition() {
     console.log('CastlingPosition')
     let cp = ''
@@ -175,18 +203,33 @@ function CastlingPosition() {
     return cp
 }
 
+//=========================================================
+// List possible en passant squares 
+//=========================================================
+function lst_enpassant() {
+    console.log('lst_enpassant')
+    let parts = fenInput.value.split(' ')
+    parts[3] = EnPassantPosition()
+    fenInput.value = parts.join(' ')
+}
+
+//=========================================================
+// Set En Passant position string for the FEN
+//=========================================================
 function EnPassantPosition() {
-    console.log('EnPassantPosition', typeof enPassantSelect.value)
+    console.log('EnPassantPosition')
     let ep = ''
     if (enPassantSelect.value === '-' || !enPassantSelect.value)
         { ep = '-' }
     else {
         ep = enPassantSelect.value
     }
-    console.log('ep=', ep, typeof ep)
     return ep
 }
 
+//=========================================================
+// Change the move color of the position
+//=========================================================
 function changeFenColor() {
     console.log('changeFenColor')
     let fenposition = fenInput.value
@@ -196,9 +239,6 @@ function changeFenColor() {
     fenInput.value = parts.join(' ')
     let r = check_position(analyzeBoard.fen())
 }
-
-stockfish.postMessage('uci');
-//stockfish.postMessage('setoption name MultiPV value ' + multiPV);
 
 //=========================================================
 // Analyze the position using Stockfish
@@ -264,3 +304,6 @@ function analyzePosition() {
         }
     };
 }
+
+
+
