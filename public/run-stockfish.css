@@ -36,3 +36,8 @@
     /*border: 1px solid black; /* Temporary border for debugging */
     margin-top: 20px;
 }
+
+#moves {
+    width: 400px;
+    border: 1px solid black; /* Temporary border for debugging */
+}
