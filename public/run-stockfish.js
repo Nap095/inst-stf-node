@@ -16,6 +16,7 @@ const warningElement = document.getElementById('warning');
 const outputElement = document.getElementById('output');
 const chronoElement = document.getElementById('chrono');
 const movesElement = document.getElementById('moves');
+const commentpositionElement = document.getElementById('comment-position');
 const fenInput = document.getElementById('fen');
 const enPassantSelect = document.getElementById('enpassant');
 const variationsval = document.getElementById('variations-val');
@@ -160,12 +161,18 @@ function list_moves() {
         chess.load(fenposition)
         let moves = chess.moves()
         movesElement.innerHTML = moves.length > 0 
-            ? 'Possible moves: ' + moves.join(', ') 
+            ? moves.length +  ' possible moves: ' + moves.join(', ') 
             : '<span style="color: red;">No legal moves available</span>';
+        let CommentPosition = ''
+        CommentPosition += 'In check: ' + chess.inCheck() + '<br>'
+        CommentPosition += 'In checkmate: ' + chess.isCheckmate() + '<br>'
+        commentpositionElement.innerHTML = CommentPosition
     } else {
         console.log('Invalid FEN');
         movesElement.innerHTML = '<span style="color: red;">Invalid FEN</span>';
+        commentpositionElement.innerHTML = ''
     }
+
 }
 
 //=========================================================

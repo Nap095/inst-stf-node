@@ -39,5 +39,14 @@
 
 #moves {
     width: 400px;
-    border: 1px solid black; /* Temporary border for debugging */
+    border: 1px solid black;
 }
+
+#position-setup {
+    margin-top: 50px;
+}
+
+#comment-position {
+    margin-top: 10px;
+    color: royalblue;
+}   
